@@ -1,0 +1,1321 @@
+[05/06 14:41:55] ScanObjectNNHardest INFO: dist_url: tcp://localhost:8888
+dist_backend: nccl
+multiprocessing_distributed: False
+ngpus_per_node: 1
+world_size: 1
+launcher: mp
+local_rank: 0
+use_gpu: True
+seed: 1174
+epoch: 0
+epochs: 250
+ignore_index: None
+val_fn: validate
+deterministic: False
+sync_bn: False
+criterion_args:
+  NAME: SmoothCrossEntropy
+  label_smoothing: 0.3
+use_mask: False
+grad_norm_clip: 10
+layer_decay: 0
+step_per_update: 1
+start_epoch: 1
+sched_on_epoch: True
+wandb:
+  use_wandb: False
+  project: PointNeXt-ScanObjectNN
+  tags: ['scanobjectnn', 'train', 'pan', 'ngpus1', 'seed1174']
+  name: scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu
+use_amp: False
+use_voting: False
+val_freq: 1
+resume: False
+test: False
+finetune: False
+mode: train
+logname: None
+load_path: None
+print_freq: 10
+save_freq: -1
+root_dir: log/scanobjectnn
+pretrained_path: None
+datatransforms:
+  train: ['PointsToTensor', 'PointCloudScaling', 'PointCloudCenterAndNormalize', 'PointCloudRotation']
+  val: ['PointsToTensor', 'PointCloudCenterAndNormalize']
+  vote: ['PointCloudRotation']
+  kwargs:
+    scale: [0.9, 1.1]
+    angle: [0.0, 1.0, 0.0]
+    gravity_dim: 1
+feature_keys: pos
+dataset:
+  common:
+    NAME: ScanObjectNNHardest
+    data_dir: ./data/ScanObjectNN/h5_files/main_split
+  train:
+    split: train
+  val:
+    split: val
+    num_points: 1024
+num_points: 1024
+num_classes: 15
+batch_size: 32
+val_batch_size: 64
+dataloader:
+  num_workers: 6
+lr: 0.002
+optimizer:
+  NAME: adamw
+  weight_decay: 0.05
+sched: cosine
+warmup_epochs: 0
+min_lr: 0.0001
+t_max: 200
+log_dir: log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu
+model:
+  NAME: BaseCls
+  encoder_args:
+    NAME: PointAnchorEncoder
+    width: 64
+    in_channels: 4
+    feature_expansion: [2, 2, 2, 2]
+    stride: [2, 2, 2, 2]
+    nsamples: 24
+  cls_args:
+    NAME: ClsHead
+    num_classes: 15
+    mlps: [512, 256]
+    norm_args:
+      norm: bn1d
+rank: 0
+distributed: False
+mp: False
+task_name: scanobjectnn
+exp_name: pan
+opts: 
+run_name: scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu
+run_dir: log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu
+exp_dir: log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu
+ckpt_dir: log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint
+log_path: log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu.log
+cfg_path: log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/cfg.yaml
+[05/06 14:41:56] ScanObjectNNHardest INFO: BaseCls(
+  (encoder): PointAnchorEncoder(
+    (embedding): Sequential(
+      (0): Conv1d(4, 64, kernel_size=(1,), stride=(1,))
+    )
+    (encoder): Sequential(
+      (0): PointConv(
+        (conv): Sequential(
+          (0): SetConv(
+            (norm): PointPreNorm()
+            (conv): Sequential(
+              (0): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (conv1): Sequential(
+              (0): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): maxpool(
+                (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+              )
+            )
+            (act): ReLU(inplace=True)
+            (maxpool): maxpool(
+              (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+            )
+          )
+          (1): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+          (2): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (3): ReLU(inplace=True)
+          (4): Conv1d(128, 128, kernel_size=(1,), stride=(1,))
+          (5): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (skip_conv): Sequential(
+          (0): Conv1d(64, 128, kernel_size=(1,), stride=(1,))
+          (1): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (act): ReLU(inplace=True)
+      )
+      (1): PointConv(
+        (conv): Sequential(
+          (0): SetConv(
+            (norm): PointPreNorm()
+            (conv): Sequential(
+              (0): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (conv1): Sequential(
+              (0): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): maxpool(
+                (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+              )
+            )
+            (act): ReLU(inplace=True)
+            (maxpool): maxpool(
+              (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+            )
+          )
+          (1): Conv1d(256, 256, kernel_size=(1,), stride=(1,))
+          (2): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (3): ReLU(inplace=True)
+          (4): Conv1d(256, 256, kernel_size=(1,), stride=(1,))
+          (5): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (skip_conv): Sequential(
+          (0): Conv1d(128, 256, kernel_size=(1,), stride=(1,))
+          (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (act): ReLU(inplace=True)
+      )
+      (2): PointConv(
+        (conv): Sequential(
+          (0): SetConv(
+            (norm): PointPreNorm()
+            (conv): Sequential(
+              (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (conv1): Sequential(
+              (0): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): maxpool(
+                (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+              )
+            )
+            (act): ReLU(inplace=True)
+            (maxpool): maxpool(
+              (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+            )
+          )
+          (1): Conv1d(512, 512, kernel_size=(1,), stride=(1,))
+          (2): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (3): ReLU(inplace=True)
+          (4): Conv1d(512, 512, kernel_size=(1,), stride=(1,))
+          (5): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (skip_conv): Sequential(
+          (0): Conv1d(256, 512, kernel_size=(1,), stride=(1,))
+          (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (act): ReLU(inplace=True)
+      )
+      (3): PointConv(
+        (conv): Sequential(
+          (0): SetConv(
+            (norm): PointPreNorm()
+            (conv): Sequential(
+              (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+            (conv1): Sequential(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1))
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): maxpool(
+                (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+              )
+            )
+            (act): ReLU(inplace=True)
+            (maxpool): maxpool(
+              (pool): MaxPool2d(kernel_size=(1, 24), stride=(1, 24), padding=0, dilation=1, ceil_mode=False)
+            )
+          )
+          (1): Conv1d(1024, 1024, kernel_size=(1,), stride=(1,))
+          (2): BatchNorm1d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (3): ReLU(inplace=True)
+          (4): Conv1d(1024, 1024, kernel_size=(1,), stride=(1,))
+          (5): BatchNorm1d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (skip_conv): Sequential(
+          (0): Conv1d(512, 1024, kernel_size=(1,), stride=(1,))
+          (1): BatchNorm1d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (act): ReLU(inplace=True)
+      )
+    )
+    (pool): AdaptiveMaxPool1d(output_size=1)
+  )
+  (prediction): ClsHead(
+    (head): Sequential(
+      (0): Sequential(
+        (0): Linear(in_features=1024, out_features=512, bias=False)
+        (1): BatchNorm1d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (1): Dropout(p=0.5, inplace=False)
+      (2): Sequential(
+        (0): Linear(in_features=512, out_features=256, bias=False)
+        (1): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (3): Dropout(p=0.5, inplace=False)
+      (4): Sequential(
+        (0): Linear(in_features=256, out_features=15, bias=True)
+      )
+    )
+  )
+  (criterion): SmoothCrossEntropy()
+)
+[05/06 14:41:56] ScanObjectNNHardest INFO: Number of params: 6.2624 M
+[05/06 14:41:56] ScanObjectNNHardest INFO: Param groups = {
+  "decay": {
+    "weight_decay": 0.05,
+    "params": [
+      "encoder.embedding.0.weight",
+      "encoder.encoder.0.conv.0.norm.alpha",
+      "encoder.encoder.0.conv.0.norm.beta",
+      "encoder.encoder.0.conv.0.conv.0.weight",
+      "encoder.encoder.0.conv.0.conv1.0.weight",
+      "encoder.encoder.0.conv.1.weight",
+      "encoder.encoder.0.conv.4.weight",
+      "encoder.encoder.0.skip_conv.0.weight",
+      "encoder.encoder.1.conv.0.norm.alpha",
+      "encoder.encoder.1.conv.0.norm.beta",
+      "encoder.encoder.1.conv.0.conv.0.weight",
+      "encoder.encoder.1.conv.0.conv1.0.weight",
+      "encoder.encoder.1.conv.1.weight",
+      "encoder.encoder.1.conv.4.weight",
+      "encoder.encoder.1.skip_conv.0.weight",
+      "encoder.encoder.2.conv.0.norm.alpha",
+      "encoder.encoder.2.conv.0.norm.beta",
+      "encoder.encoder.2.conv.0.conv.0.weight",
+      "encoder.encoder.2.conv.0.conv1.0.weight",
+      "encoder.encoder.2.conv.1.weight",
+      "encoder.encoder.2.conv.4.weight",
+      "encoder.encoder.2.skip_conv.0.weight",
+      "encoder.encoder.3.conv.0.norm.alpha",
+      "encoder.encoder.3.conv.0.norm.beta",
+      "encoder.encoder.3.conv.0.conv.0.weight",
+      "encoder.encoder.3.conv.0.conv1.0.weight",
+      "encoder.encoder.3.conv.1.weight",
+      "encoder.encoder.3.conv.4.weight",
+      "encoder.encoder.3.skip_conv.0.weight",
+      "prediction.head.0.0.weight",
+      "prediction.head.2.0.weight",
+      "prediction.head.4.0.weight"
+    ],
+    "lr_scale": 1.0
+  },
+  "no_decay": {
+    "weight_decay": 0.0,
+    "params": [
+      "encoder.embedding.0.bias",
+      "encoder.encoder.0.conv.0.conv.0.bias",
+      "encoder.encoder.0.conv.0.conv.1.weight",
+      "encoder.encoder.0.conv.0.conv.1.bias",
+      "encoder.encoder.0.conv.0.conv1.0.bias",
+      "encoder.encoder.0.conv.0.conv1.1.weight",
+      "encoder.encoder.0.conv.0.conv1.1.bias",
+      "encoder.encoder.0.conv.1.bias",
+      "encoder.encoder.0.conv.2.weight",
+      "encoder.encoder.0.conv.2.bias",
+      "encoder.encoder.0.conv.4.bias",
+      "encoder.encoder.0.conv.5.weight",
+      "encoder.encoder.0.conv.5.bias",
+      "encoder.encoder.0.skip_conv.0.bias",
+      "encoder.encoder.0.skip_conv.1.weight",
+      "encoder.encoder.0.skip_conv.1.bias",
+      "encoder.encoder.1.conv.0.conv.0.bias",
+      "encoder.encoder.1.conv.0.conv.1.weight",
+      "encoder.encoder.1.conv.0.conv.1.bias",
+      "encoder.encoder.1.conv.0.conv1.0.bias",
+      "encoder.encoder.1.conv.0.conv1.1.weight",
+      "encoder.encoder.1.conv.0.conv1.1.bias",
+      "encoder.encoder.1.conv.1.bias",
+      "encoder.encoder.1.conv.2.weight",
+      "encoder.encoder.1.conv.2.bias",
+      "encoder.encoder.1.conv.4.bias",
+      "encoder.encoder.1.conv.5.weight",
+      "encoder.encoder.1.conv.5.bias",
+      "encoder.encoder.1.skip_conv.0.bias",
+      "encoder.encoder.1.skip_conv.1.weight",
+      "encoder.encoder.1.skip_conv.1.bias",
+      "encoder.encoder.2.conv.0.conv.0.bias",
+      "encoder.encoder.2.conv.0.conv.1.weight",
+      "encoder.encoder.2.conv.0.conv.1.bias",
+      "encoder.encoder.2.conv.0.conv1.0.bias",
+      "encoder.encoder.2.conv.0.conv1.1.weight",
+      "encoder.encoder.2.conv.0.conv1.1.bias",
+      "encoder.encoder.2.conv.1.bias",
+      "encoder.encoder.2.conv.2.weight",
+      "encoder.encoder.2.conv.2.bias",
+      "encoder.encoder.2.conv.4.bias",
+      "encoder.encoder.2.conv.5.weight",
+      "encoder.encoder.2.conv.5.bias",
+      "encoder.encoder.2.skip_conv.0.bias",
+      "encoder.encoder.2.skip_conv.1.weight",
+      "encoder.encoder.2.skip_conv.1.bias",
+      "encoder.encoder.3.conv.0.conv.0.bias",
+      "encoder.encoder.3.conv.0.conv.1.weight",
+      "encoder.encoder.3.conv.0.conv.1.bias",
+      "encoder.encoder.3.conv.0.conv1.0.bias",
+      "encoder.encoder.3.conv.0.conv1.1.weight",
+      "encoder.encoder.3.conv.0.conv1.1.bias",
+      "encoder.encoder.3.conv.1.bias",
+      "encoder.encoder.3.conv.2.weight",
+      "encoder.encoder.3.conv.2.bias",
+      "encoder.encoder.3.conv.4.bias",
+      "encoder.encoder.3.conv.5.weight",
+      "encoder.encoder.3.conv.5.bias",
+      "encoder.encoder.3.skip_conv.0.bias",
+      "encoder.encoder.3.skip_conv.1.weight",
+      "encoder.encoder.3.skip_conv.1.bias",
+      "prediction.head.0.1.weight",
+      "prediction.head.0.1.bias",
+      "prediction.head.2.1.weight",
+      "prediction.head.2.1.bias",
+      "prediction.head.4.0.bias"
+    ],
+    "lr_scale": 1.0
+  }
+}
+[05/06 14:41:57] ScanObjectNNHardest INFO: Successfully load ScanObjectNN val size: (2882, 1024, 3), num_classes: 15
+[05/06 14:41:57] ScanObjectNNHardest INFO: length of validation dataset: 2882
+[05/06 14:41:57] ScanObjectNNHardest INFO: Successfully load ScanObjectNN val size: (2882, 1024, 3), num_classes: 15
+[05/06 14:41:57] ScanObjectNNHardest INFO: number of classes of the dataset: 15, number of points sampled from dataset: 1024, number of points as model input: 1024
+[05/06 14:41:57] ScanObjectNNHardest INFO: Training from scratch
+[05/06 14:42:00] ScanObjectNNHardest INFO: Successfully load ScanObjectNN train size: (11416, 2048, 3), num_classes: 15
+[05/06 14:42:00] ScanObjectNNHardest INFO: length of training dataset: 11416
+[05/06 14:43:27] ScanObjectNNHardest INFO: Find a better ckpt @E1
+[05/06 14:43:27] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 0.00%
+bin       : 63.82%
+box       : 8.27%
+cabinet   : 76.34%
+chair     : 46.41%
+desk      : 8.00%
+display   : 59.80%
+door      : 96.67%
+shelf     : 54.36%
+table     : 26.30%
+bed       : 93.64%
+pillow    : 38.10%
+sink      : 15.83%
+sofa      : 40.48%
+toilet    : 0.00%
+E@1	OA: 48.20	mAcc: 41.87
+
+[05/06 14:43:27] ScanObjectNNHardest INFO: Epoch 1 LR 0.002000 train_oa 45.39, val_oa 48.20, best val oa 48.20
+[05/06 14:43:27] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 14:44:45] ScanObjectNNHardest INFO: Find a better ckpt @E2
+[05/06 14:44:45] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 3.61%
+bin       : 91.96%
+box       : 1.50%
+cabinet   : 54.03%
+chair     : 80.51%
+desk      : 19.33%
+display   : 51.96%
+door      : 89.05%
+shelf     : 65.98%
+table     : 75.19%
+bed       : 92.73%
+pillow    : 39.05%
+sink      : 54.17%
+sofa      : 40.95%
+toilet    : 2.35%
+E@2	OA: 58.40	mAcc: 50.82
+
+[05/06 14:44:45] ScanObjectNNHardest INFO: Epoch 2 LR 0.002000 train_oa 60.97, val_oa 58.40, best val oa 58.40
+[05/06 14:44:46] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 14:46:04] ScanObjectNNHardest INFO: Epoch 3 LR 0.002000 train_oa 66.62, val_oa 51.42, best val oa 58.40
+[05/06 14:47:23] ScanObjectNNHardest INFO: Find a better ckpt @E4
+[05/06 14:47:23] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 32.53%
+bin       : 67.34%
+box       : 40.60%
+cabinet   : 59.41%
+chair     : 80.51%
+desk      : 66.67%
+display   : 73.53%
+door      : 86.67%
+shelf     : 66.39%
+table     : 57.41%
+bed       : 97.27%
+pillow    : 71.43%
+sink      : 52.50%
+sofa      : 57.14%
+toilet    : 34.12%
+E@4	OA: 65.61	mAcc: 62.90
+
+[05/06 14:47:23] ScanObjectNNHardest INFO: Epoch 4 LR 0.001999 train_oa 70.42, val_oa 65.61, best val oa 65.61
+[05/06 14:47:24] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 14:48:42] ScanObjectNNHardest INFO: Find a better ckpt @E5
+[05/06 14:48:42] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 32.53%
+bin       : 87.94%
+box       : 52.63%
+cabinet   : 78.76%
+chair     : 88.46%
+desk      : 56.67%
+display   : 92.16%
+door      : 70.95%
+shelf     : 56.02%
+table     : 62.96%
+bed       : 59.09%
+pillow    : 60.95%
+sink      : 59.17%
+sofa      : 69.05%
+toilet    : 23.53%
+E@5	OA: 69.47	mAcc: 63.39
+
+[05/06 14:48:42] ScanObjectNNHardest INFO: Epoch 5 LR 0.001998 train_oa 73.33, val_oa 69.47, best val oa 69.47
+[05/06 14:48:42] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 14:50:01] ScanObjectNNHardest INFO: Find a better ckpt @E6
+[05/06 14:50:01] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 39.76%
+bin       : 73.87%
+box       : 75.19%
+cabinet   : 79.03%
+chair     : 88.72%
+desk      : 73.33%
+display   : 82.35%
+door      : 98.10%
+shelf     : 52.28%
+table     : 58.89%
+bed       : 75.45%
+pillow    : 60.00%
+sink      : 59.17%
+sofa      : 88.10%
+toilet    : 50.59%
+E@6	OA: 74.05	mAcc: 70.32
+
+[05/06 14:50:01] ScanObjectNNHardest INFO: Epoch 6 LR 0.001997 train_oa 75.61, val_oa 74.05, best val oa 74.05
+[05/06 14:50:02] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 14:51:20] ScanObjectNNHardest INFO: Epoch 7 LR 0.001996 train_oa 77.38, val_oa 70.82, best val oa 74.05
+[05/06 14:52:39] ScanObjectNNHardest INFO: Find a better ckpt @E8
+[05/06 14:52:39] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 54.22%
+bin       : 77.39%
+box       : 65.41%
+cabinet   : 75.54%
+chair     : 78.21%
+desk      : 70.00%
+display   : 92.65%
+door      : 93.33%
+shelf     : 73.44%
+table     : 70.37%
+bed       : 83.64%
+pillow    : 79.05%
+sink      : 74.17%
+sofa      : 87.62%
+toilet    : 42.35%
+E@8	OA: 76.79	mAcc: 74.49
+
+[05/06 14:52:39] ScanObjectNNHardest INFO: Epoch 8 LR 0.001994 train_oa 78.44, val_oa 76.79, best val oa 76.79
+[05/06 14:52:39] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 14:53:58] ScanObjectNNHardest INFO: Epoch 9 LR 0.001993 train_oa 80.45, val_oa 75.19, best val oa 76.79
+[05/06 14:55:17] ScanObjectNNHardest INFO: Epoch 10 LR 0.001991 train_oa 81.93, val_oa 75.95, best val oa 76.79
+[05/06 14:56:36] ScanObjectNNHardest INFO: Find a better ckpt @E11
+[05/06 14:56:36] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 56.63%
+bin       : 63.82%
+box       : 66.92%
+cabinet   : 77.69%
+chair     : 88.72%
+desk      : 44.67%
+display   : 84.31%
+door      : 96.19%
+shelf     : 90.87%
+table     : 72.59%
+bed       : 80.91%
+pillow    : 87.62%
+sink      : 65.83%
+sofa      : 92.86%
+toilet    : 72.94%
+E@11	OA: 78.80	mAcc: 76.17
+
+[05/06 14:56:36] ScanObjectNNHardest INFO: Epoch 11 LR 0.001988 train_oa 82.29, val_oa 78.80, best val oa 78.80
+[05/06 14:56:37] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 14:57:55] ScanObjectNNHardest INFO: Epoch 12 LR 0.001986 train_oa 83.08, val_oa 76.27, best val oa 78.80
+[05/06 14:59:14] ScanObjectNNHardest INFO: Epoch 13 LR 0.001983 train_oa 83.69, val_oa 77.59, best val oa 78.80
+[05/06 15:00:33] ScanObjectNNHardest INFO: Epoch 14 LR 0.001980 train_oa 84.58, val_oa 77.17, best val oa 78.80
+[05/06 15:01:52] ScanObjectNNHardest INFO: Find a better ckpt @E15
+[05/06 15:01:52] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 48.19%
+bin       : 81.41%
+box       : 54.89%
+cabinet   : 72.58%
+chair     : 96.15%
+desk      : 66.67%
+display   : 75.49%
+door      : 95.71%
+shelf     : 69.71%
+table     : 71.85%
+bed       : 80.91%
+pillow    : 84.76%
+sink      : 79.17%
+sofa      : 95.71%
+toilet    : 85.88%
+E@15	OA: 79.25	mAcc: 77.27
+
+[05/06 15:01:52] ScanObjectNNHardest INFO: Epoch 15 LR 0.001977 train_oa 85.37, val_oa 79.25, best val oa 79.25
+[05/06 15:01:52] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:03:11] ScanObjectNNHardest INFO: Find a better ckpt @E16
+[05/06 15:03:11] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 71.08%
+bin       : 88.94%
+box       : 57.14%
+cabinet   : 77.96%
+chair     : 94.36%
+desk      : 53.33%
+display   : 85.78%
+door      : 95.24%
+shelf     : 55.60%
+table     : 80.37%
+bed       : 82.73%
+pillow    : 80.00%
+sink      : 64.17%
+sofa      : 94.76%
+toilet    : 90.59%
+E@16	OA: 79.94	mAcc: 78.14
+
+[05/06 15:03:11] ScanObjectNNHardest INFO: Epoch 16 LR 0.001974 train_oa 85.94, val_oa 79.94, best val oa 79.94
+[05/06 15:03:11] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:04:30] ScanObjectNNHardest INFO: Epoch 17 LR 0.001970 train_oa 86.72, val_oa 76.44, best val oa 79.94
+[05/06 15:05:49] ScanObjectNNHardest INFO: Find a better ckpt @E18
+[05/06 15:05:49] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 59.04%
+bin       : 83.42%
+box       : 60.15%
+cabinet   : 74.73%
+chair     : 88.46%
+desk      : 56.00%
+display   : 88.73%
+door      : 93.81%
+shelf     : 80.91%
+table     : 88.15%
+bed       : 88.18%
+pillow    : 89.52%
+sink      : 75.00%
+sofa      : 92.38%
+toilet    : 64.71%
+E@18	OA: 81.30	mAcc: 78.88
+
+[05/06 15:05:49] ScanObjectNNHardest INFO: Epoch 18 LR 0.001966 train_oa 86.97, val_oa 81.30, best val oa 81.30
+[05/06 15:05:49] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:07:08] ScanObjectNNHardest INFO: Find a better ckpt @E19
+[05/06 15:07:08] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 61.45%
+bin       : 86.93%
+box       : 78.20%
+cabinet   : 93.55%
+chair     : 89.49%
+desk      : 66.67%
+display   : 87.75%
+door      : 77.14%
+shelf     : 82.57%
+table     : 68.15%
+bed       : 91.82%
+pillow    : 89.52%
+sink      : 79.17%
+sofa      : 89.05%
+toilet    : 81.18%
+E@19	OA: 83.10	mAcc: 81.51
+
+[05/06 15:07:08] ScanObjectNNHardest INFO: Epoch 19 LR 0.001962 train_oa 87.51, val_oa 83.10, best val oa 83.10
+[05/06 15:07:08] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:08:27] ScanObjectNNHardest INFO: Epoch 20 LR 0.001958 train_oa 88.19, val_oa 79.67, best val oa 83.10
+[05/06 15:09:45] ScanObjectNNHardest INFO: Find a better ckpt @E21
+[05/06 15:09:45] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 53.01%
+bin       : 79.90%
+box       : 61.65%
+cabinet   : 89.52%
+chair     : 87.44%
+desk      : 72.67%
+display   : 92.16%
+door      : 89.05%
+shelf     : 91.70%
+table     : 77.78%
+bed       : 80.00%
+pillow    : 85.71%
+sink      : 78.33%
+sofa      : 93.33%
+toilet    : 65.88%
+E@21	OA: 83.21	mAcc: 79.88
+
+[05/06 15:09:45] ScanObjectNNHardest INFO: Epoch 21 LR 0.001954 train_oa 88.56, val_oa 83.21, best val oa 83.21
+[05/06 15:09:46] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:11:04] ScanObjectNNHardest INFO: Epoch 22 LR 0.001949 train_oa 88.86, val_oa 81.85, best val oa 83.21
+[05/06 15:12:23] ScanObjectNNHardest INFO: Epoch 23 LR 0.001944 train_oa 89.57, val_oa 82.86, best val oa 83.21
+[05/06 15:13:42] ScanObjectNNHardest INFO: Epoch 24 LR 0.001939 train_oa 90.23, val_oa 82.62, best val oa 83.21
+[05/06 15:15:01] ScanObjectNNHardest INFO: Epoch 25 LR 0.001933 train_oa 90.61, val_oa 81.82, best val oa 83.21
+[05/06 15:16:20] ScanObjectNNHardest INFO: Epoch 26 LR 0.001928 train_oa 90.77, val_oa 82.17, best val oa 83.21
+[05/06 15:17:38] ScanObjectNNHardest INFO: Find a better ckpt @E27
+[05/06 15:17:38] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 74.70%
+bin       : 86.93%
+box       : 67.67%
+cabinet   : 77.15%
+chair     : 96.67%
+desk      : 71.33%
+display   : 89.71%
+door      : 96.67%
+shelf     : 88.38%
+table     : 74.07%
+bed       : 88.18%
+pillow    : 82.86%
+sink      : 75.83%
+sofa      : 93.33%
+toilet    : 83.53%
+E@27	OA: 84.56	mAcc: 83.13
+
+[05/06 15:17:38] ScanObjectNNHardest INFO: Epoch 27 LR 0.001922 train_oa 91.17, val_oa 84.56, best val oa 84.56
+[05/06 15:17:39] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:18:57] ScanObjectNNHardest INFO: Epoch 28 LR 0.001916 train_oa 91.94, val_oa 82.48, best val oa 84.56
+[05/06 15:20:17] ScanObjectNNHardest INFO: Epoch 29 LR 0.001910 train_oa 91.47, val_oa 81.96, best val oa 84.56
+[05/06 15:21:36] ScanObjectNNHardest INFO: Find a better ckpt @E30
+[05/06 15:21:36] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 67.47%
+bin       : 86.43%
+box       : 48.87%
+cabinet   : 87.63%
+chair     : 95.90%
+desk      : 79.33%
+display   : 92.65%
+door      : 90.00%
+shelf     : 92.12%
+table     : 61.48%
+bed       : 90.91%
+pillow    : 90.48%
+sink      : 83.33%
+sofa      : 90.00%
+toilet    : 90.59%
+E@30	OA: 84.63	mAcc: 83.15
+
+[05/06 15:21:36] ScanObjectNNHardest INFO: Epoch 30 LR 0.001903 train_oa 92.31, val_oa 84.63, best val oa 84.63
+[05/06 15:21:36] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:22:54] ScanObjectNNHardest INFO: Epoch 31 LR 0.001896 train_oa 92.22, val_oa 81.58, best val oa 84.63
+[05/06 15:24:13] ScanObjectNNHardest INFO: Find a better ckpt @E32
+[05/06 15:24:13] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 66.27%
+bin       : 89.45%
+box       : 66.17%
+cabinet   : 83.60%
+chair     : 88.21%
+desk      : 70.00%
+display   : 92.16%
+door      : 94.29%
+shelf     : 89.63%
+table     : 78.89%
+bed       : 85.45%
+pillow    : 90.48%
+sink      : 78.33%
+sofa      : 93.33%
+toilet    : 85.88%
+E@32	OA: 84.94	mAcc: 83.47
+
+[05/06 15:24:13] ScanObjectNNHardest INFO: Epoch 32 LR 0.001890 train_oa 92.66, val_oa 84.94, best val oa 84.94
+[05/06 15:24:13] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:25:32] ScanObjectNNHardest INFO: Epoch 33 LR 0.001882 train_oa 93.27, val_oa 83.52, best val oa 84.94
+[05/06 15:26:51] ScanObjectNNHardest INFO: Epoch 34 LR 0.001875 train_oa 93.00, val_oa 83.52, best val oa 84.94
+[05/06 15:28:10] ScanObjectNNHardest INFO: Epoch 35 LR 0.001868 train_oa 93.69, val_oa 82.30, best val oa 84.94
+[05/06 15:29:29] ScanObjectNNHardest INFO: Epoch 36 LR 0.001860 train_oa 94.18, val_oa 82.30, best val oa 84.94
+[05/06 15:30:47] ScanObjectNNHardest INFO: Epoch 37 LR 0.001852 train_oa 94.15, val_oa 82.82, best val oa 84.94
+[05/06 15:32:07] ScanObjectNNHardest INFO: Epoch 38 LR 0.001844 train_oa 94.36, val_oa 83.31, best val oa 84.94
+[05/06 15:33:25] ScanObjectNNHardest INFO: Epoch 39 LR 0.001836 train_oa 94.46, val_oa 84.46, best val oa 84.94
+[05/06 15:34:44] ScanObjectNNHardest INFO: Epoch 40 LR 0.001827 train_oa 94.70, val_oa 84.42, best val oa 84.94
+[05/06 15:36:03] ScanObjectNNHardest INFO: Epoch 41 LR 0.001819 train_oa 95.22, val_oa 82.48, best val oa 84.94
+[05/06 15:37:21] ScanObjectNNHardest INFO: Epoch 42 LR 0.001810 train_oa 95.22, val_oa 84.21, best val oa 84.94
+[05/06 15:38:40] ScanObjectNNHardest INFO: Find a better ckpt @E43
+[05/06 15:38:40] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 66.27%
+bin       : 85.43%
+box       : 84.21%
+cabinet   : 88.17%
+chair     : 94.62%
+desk      : 68.67%
+display   : 91.18%
+door      : 95.71%
+shelf     : 74.27%
+table     : 75.19%
+bed       : 82.73%
+pillow    : 85.71%
+sink      : 79.17%
+sofa      : 92.86%
+toilet    : 95.29%
+E@43	OA: 85.29	mAcc: 83.96
+
+[05/06 15:38:40] ScanObjectNNHardest INFO: Epoch 43 LR 0.001801 train_oa 95.80, val_oa 85.29, best val oa 85.29
+[05/06 15:38:40] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 15:39:59] ScanObjectNNHardest INFO: Epoch 44 LR 0.001791 train_oa 96.01, val_oa 83.93, best val oa 85.29
+[05/06 15:41:18] ScanObjectNNHardest INFO: Epoch 45 LR 0.001782 train_oa 95.76, val_oa 85.08, best val oa 85.29
+[05/06 15:42:37] ScanObjectNNHardest INFO: Epoch 46 LR 0.001772 train_oa 96.30, val_oa 84.18, best val oa 85.29
+[05/06 15:43:55] ScanObjectNNHardest INFO: Epoch 47 LR 0.001763 train_oa 96.09, val_oa 83.87, best val oa 85.29
+[05/06 15:45:14] ScanObjectNNHardest INFO: Epoch 48 LR 0.001753 train_oa 96.28, val_oa 84.07, best val oa 85.29
+[05/06 15:46:33] ScanObjectNNHardest INFO: Epoch 49 LR 0.001743 train_oa 96.53, val_oa 84.11, best val oa 85.29
+[05/06 15:47:52] ScanObjectNNHardest INFO: Epoch 50 LR 0.001732 train_oa 96.15, val_oa 84.39, best val oa 85.29
+[05/06 15:49:10] ScanObjectNNHardest INFO: Epoch 51 LR 0.001722 train_oa 96.69, val_oa 84.25, best val oa 85.29
+[05/06 15:50:29] ScanObjectNNHardest INFO: Epoch 52 LR 0.001711 train_oa 96.76, val_oa 83.93, best val oa 85.29
+[05/06 15:51:49] ScanObjectNNHardest INFO: Epoch 53 LR 0.001700 train_oa 96.61, val_oa 84.98, best val oa 85.29
+[05/06 15:53:08] ScanObjectNNHardest INFO: Epoch 54 LR 0.001689 train_oa 96.64, val_oa 85.01, best val oa 85.29
+[05/06 15:54:26] ScanObjectNNHardest INFO: Epoch 55 LR 0.001678 train_oa 97.37, val_oa 84.66, best val oa 85.29
+[05/06 15:55:45] ScanObjectNNHardest INFO: Epoch 56 LR 0.001667 train_oa 97.52, val_oa 84.04, best val oa 85.29
+[05/06 15:57:04] ScanObjectNNHardest INFO: Epoch 57 LR 0.001656 train_oa 97.49, val_oa 82.03, best val oa 85.29
+[05/06 15:58:23] ScanObjectNNHardest INFO: Epoch 58 LR 0.001644 train_oa 97.19, val_oa 84.73, best val oa 85.29
+[05/06 15:59:42] ScanObjectNNHardest INFO: Epoch 59 LR 0.001632 train_oa 97.83, val_oa 81.96, best val oa 85.29
+[05/06 16:01:01] ScanObjectNNHardest INFO: Epoch 60 LR 0.001620 train_oa 97.81, val_oa 81.61, best val oa 85.29
+[05/06 16:02:20] ScanObjectNNHardest INFO: Epoch 61 LR 0.001608 train_oa 97.25, val_oa 83.66, best val oa 85.29
+[05/06 16:03:38] ScanObjectNNHardest INFO: Epoch 62 LR 0.001596 train_oa 97.78, val_oa 83.69, best val oa 85.29
+[05/06 16:04:57] ScanObjectNNHardest INFO: Find a better ckpt @E63
+[05/06 16:04:57] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 74.70%
+bin       : 92.46%
+box       : 45.11%
+cabinet   : 80.11%
+chair     : 94.62%
+desk      : 81.33%
+display   : 93.14%
+door      : 94.29%
+shelf     : 79.67%
+table     : 81.11%
+bed       : 84.55%
+pillow    : 88.57%
+sink      : 87.50%
+sofa      : 97.14%
+toilet    : 92.94%
+E@63	OA: 85.63	mAcc: 84.48
+
+[05/06 16:04:57] ScanObjectNNHardest INFO: Epoch 63 LR 0.001584 train_oa 97.93, val_oa 85.63, best val oa 85.63
+[05/06 16:04:58] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 16:06:16] ScanObjectNNHardest INFO: Epoch 64 LR 0.001572 train_oa 98.08, val_oa 85.29, best val oa 85.63
+[05/06 16:07:35] ScanObjectNNHardest INFO: Epoch 65 LR 0.001559 train_oa 97.78, val_oa 83.52, best val oa 85.63
+[05/06 16:08:54] ScanObjectNNHardest INFO: Epoch 66 LR 0.001546 train_oa 98.09, val_oa 84.87, best val oa 85.63
+[05/06 16:10:14] ScanObjectNNHardest INFO: Epoch 67 LR 0.001534 train_oa 98.07, val_oa 84.56, best val oa 85.63
+[05/06 16:11:33] ScanObjectNNHardest INFO: Epoch 68 LR 0.001521 train_oa 98.19, val_oa 84.94, best val oa 85.63
+[05/06 16:12:52] ScanObjectNNHardest INFO: Epoch 69 LR 0.001508 train_oa 98.14, val_oa 85.11, best val oa 85.63
+[05/06 16:14:11] ScanObjectNNHardest INFO: Epoch 70 LR 0.001495 train_oa 97.88, val_oa 85.18, best val oa 85.63
+[05/06 16:15:29] ScanObjectNNHardest INFO: Epoch 71 LR 0.001481 train_oa 98.53, val_oa 84.59, best val oa 85.63
+[05/06 16:16:48] ScanObjectNNHardest INFO: Find a better ckpt @E72
+[05/06 16:16:48] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 59.04%
+bin       : 87.94%
+box       : 69.17%
+cabinet   : 84.68%
+chair     : 92.82%
+desk      : 74.00%
+display   : 88.24%
+door      : 95.24%
+shelf     : 90.87%
+table     : 81.48%
+bed       : 80.91%
+pillow    : 87.62%
+sink      : 83.33%
+sofa      : 96.19%
+toilet    : 91.76%
+E@72	OA: 86.19	mAcc: 84.22
+
+[05/06 16:16:48] ScanObjectNNHardest INFO: Epoch 72 LR 0.001468 train_oa 98.18, val_oa 86.19, best val oa 86.19
+[05/06 16:16:48] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 16:18:07] ScanObjectNNHardest INFO: Epoch 73 LR 0.001454 train_oa 98.29, val_oa 84.98, best val oa 86.19
+[05/06 16:19:26] ScanObjectNNHardest INFO: Epoch 74 LR 0.001441 train_oa 98.42, val_oa 85.18, best val oa 86.19
+[05/06 16:20:44] ScanObjectNNHardest INFO: Epoch 75 LR 0.001427 train_oa 98.60, val_oa 85.91, best val oa 86.19
+[05/06 16:22:03] ScanObjectNNHardest INFO: Epoch 76 LR 0.001414 train_oa 98.53, val_oa 84.52, best val oa 86.19
+[05/06 16:23:22] ScanObjectNNHardest INFO: Epoch 77 LR 0.001400 train_oa 98.62, val_oa 86.19, best val oa 86.19
+[05/06 16:24:41] ScanObjectNNHardest INFO: Epoch 78 LR 0.001386 train_oa 98.89, val_oa 85.60, best val oa 86.19
+[05/06 16:26:00] ScanObjectNNHardest INFO: Epoch 79 LR 0.001372 train_oa 98.49, val_oa 85.43, best val oa 86.19
+[05/06 16:27:18] ScanObjectNNHardest INFO: Epoch 80 LR 0.001358 train_oa 98.64, val_oa 85.36, best val oa 86.19
+[05/06 16:28:37] ScanObjectNNHardest INFO: Find a better ckpt @E81
+[05/06 16:28:37] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 72.29%
+bin       : 90.45%
+box       : 68.42%
+cabinet   : 87.37%
+chair     : 97.18%
+desk      : 77.33%
+display   : 88.24%
+door      : 91.90%
+shelf     : 89.21%
+table     : 77.41%
+bed       : 85.45%
+pillow    : 82.86%
+sink      : 82.50%
+sofa      : 95.24%
+toilet    : 88.24%
+E@81	OA: 86.85	mAcc: 84.94
+
+[05/06 16:28:37] ScanObjectNNHardest INFO: Epoch 81 LR 0.001344 train_oa 98.95, val_oa 86.85, best val oa 86.85
+[05/06 16:28:37] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 16:29:56] ScanObjectNNHardest INFO: Epoch 82 LR 0.001329 train_oa 98.64, val_oa 85.18, best val oa 86.85
+[05/06 16:31:15] ScanObjectNNHardest INFO: Epoch 83 LR 0.001315 train_oa 98.55, val_oa 82.37, best val oa 86.85
+[05/06 16:32:33] ScanObjectNNHardest INFO: Epoch 84 LR 0.001301 train_oa 98.40, val_oa 84.46, best val oa 86.85
+[05/06 16:33:52] ScanObjectNNHardest INFO: Epoch 85 LR 0.001286 train_oa 99.05, val_oa 82.89, best val oa 86.85
+[05/06 16:35:11] ScanObjectNNHardest INFO: Epoch 86 LR 0.001272 train_oa 99.06, val_oa 85.08, best val oa 86.85
+[05/06 16:36:30] ScanObjectNNHardest INFO: Epoch 87 LR 0.001257 train_oa 98.67, val_oa 83.97, best val oa 86.85
+[05/06 16:37:49] ScanObjectNNHardest INFO: Epoch 88 LR 0.001243 train_oa 99.04, val_oa 85.53, best val oa 86.85
+[05/06 16:39:08] ScanObjectNNHardest INFO: Epoch 89 LR 0.001228 train_oa 99.06, val_oa 84.77, best val oa 86.85
+[05/06 16:40:27] ScanObjectNNHardest INFO: Epoch 90 LR 0.001213 train_oa 99.19, val_oa 85.67, best val oa 86.85
+[05/06 16:41:45] ScanObjectNNHardest INFO: Epoch 91 LR 0.001199 train_oa 99.23, val_oa 85.18, best val oa 86.85
+[05/06 16:43:05] ScanObjectNNHardest INFO: Epoch 92 LR 0.001184 train_oa 99.22, val_oa 86.64, best val oa 86.85
+[05/06 16:44:24] ScanObjectNNHardest INFO: Epoch 93 LR 0.001169 train_oa 99.12, val_oa 86.12, best val oa 86.85
+[05/06 16:45:43] ScanObjectNNHardest INFO: Epoch 94 LR 0.001154 train_oa 99.04, val_oa 85.70, best val oa 86.85
+[05/06 16:47:03] ScanObjectNNHardest INFO: Epoch 95 LR 0.001139 train_oa 99.04, val_oa 85.88, best val oa 86.85
+[05/06 16:48:23] ScanObjectNNHardest INFO: Find a better ckpt @E96
+[05/06 16:48:23] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 62.65%
+bin       : 89.45%
+box       : 72.18%
+cabinet   : 88.44%
+chair     : 95.38%
+desk      : 92.00%
+display   : 87.25%
+door      : 91.43%
+shelf     : 90.87%
+table     : 75.93%
+bed       : 87.27%
+pillow    : 91.43%
+sink      : 75.00%
+sofa      : 92.86%
+toilet    : 96.47%
+E@96	OA: 87.37	mAcc: 85.91
+
+[05/06 16:48:23] ScanObjectNNHardest INFO: Epoch 96 LR 0.001125 train_oa 99.10, val_oa 87.37, best val oa 87.37
+[05/06 16:48:23] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 16:49:42] ScanObjectNNHardest INFO: Epoch 97 LR 0.001110 train_oa 99.23, val_oa 86.81, best val oa 87.37
+[05/06 16:51:00] ScanObjectNNHardest INFO: Epoch 98 LR 0.001095 train_oa 99.09, val_oa 86.09, best val oa 87.37
+[05/06 16:52:19] ScanObjectNNHardest INFO: Epoch 99 LR 0.001080 train_oa 99.32, val_oa 86.75, best val oa 87.37
+[05/06 16:53:37] ScanObjectNNHardest INFO: Epoch 100 LR 0.001065 train_oa 99.40, val_oa 86.99, best val oa 87.37
+[05/06 16:54:56] ScanObjectNNHardest INFO: Epoch 101 LR 0.001050 train_oa 99.01, val_oa 86.36, best val oa 87.37
+[05/06 16:56:15] ScanObjectNNHardest INFO: Find a better ckpt @E102
+[05/06 16:56:15] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 75.90%
+bin       : 90.45%
+box       : 71.43%
+cabinet   : 81.45%
+chair     : 93.08%
+desk      : 82.00%
+display   : 88.24%
+door      : 95.24%
+shelf     : 90.87%
+table     : 85.56%
+bed       : 83.64%
+pillow    : 89.52%
+sink      : 84.17%
+sofa      : 94.76%
+toilet    : 91.76%
+E@102	OA: 87.47	mAcc: 86.54
+
+[05/06 16:56:15] ScanObjectNNHardest INFO: Epoch 102 LR 0.001035 train_oa 99.53, val_oa 87.47, best val oa 87.47
+[05/06 16:56:15] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 16:57:33] ScanObjectNNHardest INFO: Epoch 103 LR 0.001020 train_oa 99.37, val_oa 86.16, best val oa 87.47
+[05/06 16:58:52] ScanObjectNNHardest INFO: Epoch 104 LR 0.001005 train_oa 99.32, val_oa 86.50, best val oa 87.47
+[05/06 17:00:11] ScanObjectNNHardest INFO: Epoch 105 LR 0.000990 train_oa 99.21, val_oa 86.16, best val oa 87.47
+[05/06 17:01:30] ScanObjectNNHardest INFO: Epoch 106 LR 0.000975 train_oa 99.46, val_oa 86.50, best val oa 87.47
+[05/06 17:02:48] ScanObjectNNHardest INFO: Epoch 107 LR 0.000961 train_oa 99.46, val_oa 85.50, best val oa 87.47
+[05/06 17:04:07] ScanObjectNNHardest INFO: Epoch 108 LR 0.000946 train_oa 99.38, val_oa 86.02, best val oa 87.47
+[05/06 17:05:26] ScanObjectNNHardest INFO: Epoch 109 LR 0.000931 train_oa 99.62, val_oa 85.84, best val oa 87.47
+[05/06 17:06:45] ScanObjectNNHardest INFO: Epoch 110 LR 0.000916 train_oa 99.72, val_oa 86.22, best val oa 87.47
+[05/06 17:08:03] ScanObjectNNHardest INFO: Epoch 111 LR 0.000901 train_oa 99.49, val_oa 87.40, best val oa 87.47
+[05/06 17:09:22] ScanObjectNNHardest INFO: Epoch 112 LR 0.000887 train_oa 99.41, val_oa 86.68, best val oa 87.47
+[05/06 17:10:41] ScanObjectNNHardest INFO: Epoch 113 LR 0.000872 train_oa 99.50, val_oa 86.61, best val oa 87.47
+[05/06 17:12:00] ScanObjectNNHardest INFO: Epoch 114 LR 0.000857 train_oa 99.53, val_oa 85.70, best val oa 87.47
+[05/06 17:13:19] ScanObjectNNHardest INFO: Epoch 115 LR 0.000843 train_oa 99.52, val_oa 86.40, best val oa 87.47
+[05/06 17:14:37] ScanObjectNNHardest INFO: Epoch 116 LR 0.000828 train_oa 99.65, val_oa 85.81, best val oa 87.47
+[05/06 17:15:56] ScanObjectNNHardest INFO: Epoch 117 LR 0.000814 train_oa 99.63, val_oa 85.70, best val oa 87.47
+[05/06 17:17:15] ScanObjectNNHardest INFO: Epoch 118 LR 0.000799 train_oa 99.68, val_oa 87.09, best val oa 87.47
+[05/06 17:18:34] ScanObjectNNHardest INFO: Epoch 119 LR 0.000785 train_oa 99.55, val_oa 85.77, best val oa 87.47
+[05/06 17:19:53] ScanObjectNNHardest INFO: Epoch 120 LR 0.000771 train_oa 99.75, val_oa 87.13, best val oa 87.47
+[05/06 17:21:11] ScanObjectNNHardest INFO: Find a better ckpt @E121
+[05/06 17:21:11] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 50.60%
+bin       : 91.96%
+box       : 72.93%
+cabinet   : 91.94%
+chair     : 95.13%
+desk      : 82.67%
+display   : 91.67%
+door      : 93.33%
+shelf     : 90.87%
+table     : 75.93%
+bed       : 86.36%
+pillow    : 89.52%
+sink      : 82.50%
+sofa      : 96.19%
+toilet    : 94.12%
+E@121	OA: 87.99	mAcc: 85.71
+
+[05/06 17:21:11] ScanObjectNNHardest INFO: Epoch 121 LR 0.000756 train_oa 99.78, val_oa 87.99, best val oa 87.99
+[05/06 17:21:12] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 17:22:30] ScanObjectNNHardest INFO: Find a better ckpt @E122
+[05/06 17:22:30] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 74.70%
+bin       : 90.45%
+box       : 72.18%
+cabinet   : 88.98%
+chair     : 92.31%
+desk      : 89.33%
+display   : 91.67%
+door      : 94.76%
+shelf     : 90.04%
+table     : 75.93%
+bed       : 85.45%
+pillow    : 88.57%
+sink      : 83.33%
+sofa      : 96.19%
+toilet    : 95.29%
+E@122	OA: 88.17	mAcc: 87.28
+
+[05/06 17:22:30] ScanObjectNNHardest INFO: Epoch 122 LR 0.000742 train_oa 99.78, val_oa 88.17, best val oa 88.17
+[05/06 17:22:31] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 17:23:49] ScanObjectNNHardest INFO: Epoch 123 LR 0.000728 train_oa 99.76, val_oa 87.02, best val oa 88.17
+[05/06 17:25:07] ScanObjectNNHardest INFO: Epoch 124 LR 0.000714 train_oa 99.75, val_oa 87.61, best val oa 88.17
+[05/06 17:26:26] ScanObjectNNHardest INFO: Epoch 125 LR 0.000700 train_oa 99.71, val_oa 86.61, best val oa 88.17
+[05/06 17:27:45] ScanObjectNNHardest INFO: Epoch 126 LR 0.000686 train_oa 99.70, val_oa 87.58, best val oa 88.17
+[05/06 17:29:04] ScanObjectNNHardest INFO: Epoch 127 LR 0.000673 train_oa 99.74, val_oa 87.02, best val oa 88.17
+[05/06 17:30:23] ScanObjectNNHardest INFO: Epoch 128 LR 0.000659 train_oa 99.74, val_oa 87.20, best val oa 88.17
+[05/06 17:31:41] ScanObjectNNHardest INFO: Epoch 129 LR 0.000646 train_oa 99.81, val_oa 85.57, best val oa 88.17
+[05/06 17:33:00] ScanObjectNNHardest INFO: Epoch 130 LR 0.000632 train_oa 99.82, val_oa 86.99, best val oa 88.17
+[05/06 17:34:19] ScanObjectNNHardest INFO: Epoch 131 LR 0.000619 train_oa 99.79, val_oa 88.13, best val oa 88.17
+[05/06 17:35:38] ScanObjectNNHardest INFO: Epoch 132 LR 0.000605 train_oa 99.66, val_oa 86.09, best val oa 88.17
+[05/06 17:36:56] ScanObjectNNHardest INFO: Epoch 133 LR 0.000592 train_oa 99.68, val_oa 87.16, best val oa 88.17
+[05/06 17:38:15] ScanObjectNNHardest INFO: Epoch 134 LR 0.000579 train_oa 99.78, val_oa 86.85, best val oa 88.17
+[05/06 17:39:33] ScanObjectNNHardest INFO: Epoch 135 LR 0.000566 train_oa 99.88, val_oa 88.06, best val oa 88.17
+[05/06 17:40:52] ScanObjectNNHardest INFO: Find a better ckpt @E136
+[05/06 17:40:52] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 72.29%
+bin       : 89.45%
+box       : 74.44%
+cabinet   : 88.98%
+chair     : 95.38%
+desk      : 78.00%
+display   : 90.20%
+door      : 91.90%
+shelf     : 91.70%
+table     : 81.85%
+bed       : 84.55%
+pillow    : 88.57%
+sink      : 86.67%
+sofa      : 93.81%
+toilet    : 92.94%
+E@136	OA: 88.20	mAcc: 86.71
+
+[05/06 17:40:52] ScanObjectNNHardest INFO: Epoch 136 LR 0.000554 train_oa 99.89, val_oa 88.20, best val oa 88.20
+[05/06 17:40:53] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 17:42:11] ScanObjectNNHardest INFO: Epoch 137 LR 0.000541 train_oa 99.87, val_oa 87.23, best val oa 88.20
+[05/06 17:43:30] ScanObjectNNHardest INFO: Find a better ckpt @E138
+[05/06 17:43:30] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 72.29%
+bin       : 86.93%
+box       : 66.17%
+cabinet   : 87.90%
+chair     : 94.36%
+desk      : 77.33%
+display   : 90.69%
+door      : 97.62%
+shelf     : 91.29%
+table     : 83.70%
+bed       : 84.55%
+pillow    : 91.43%
+sink      : 90.00%
+sofa      : 95.71%
+toilet    : 94.12%
+E@138	OA: 88.34	mAcc: 86.94
+
+[05/06 17:43:30] ScanObjectNNHardest INFO: Epoch 138 LR 0.000528 train_oa 99.90, val_oa 88.34, best val oa 88.34
+[05/06 17:43:30] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 17:44:48] ScanObjectNNHardest INFO: Epoch 139 LR 0.000516 train_oa 99.93, val_oa 87.54, best val oa 88.34
+[05/06 17:46:07] ScanObjectNNHardest INFO: Epoch 140 LR 0.000504 train_oa 99.88, val_oa 87.61, best val oa 88.34
+[05/06 17:47:26] ScanObjectNNHardest INFO: Epoch 141 LR 0.000492 train_oa 99.88, val_oa 87.37, best val oa 88.34
+[05/06 17:48:45] ScanObjectNNHardest INFO: Epoch 142 LR 0.000480 train_oa 99.89, val_oa 87.99, best val oa 88.34
+[05/06 17:50:04] ScanObjectNNHardest INFO: Epoch 143 LR 0.000468 train_oa 99.91, val_oa 86.64, best val oa 88.34
+[05/06 17:51:23] ScanObjectNNHardest INFO: Epoch 144 LR 0.000456 train_oa 99.91, val_oa 87.75, best val oa 88.34
+[05/06 17:52:42] ScanObjectNNHardest INFO: Epoch 145 LR 0.000444 train_oa 99.87, val_oa 87.23, best val oa 88.34
+[05/06 17:54:00] ScanObjectNNHardest INFO: Epoch 146 LR 0.000433 train_oa 99.88, val_oa 87.61, best val oa 88.34
+[05/06 17:55:19] ScanObjectNNHardest INFO: Epoch 147 LR 0.000422 train_oa 99.88, val_oa 86.71, best val oa 88.34
+[05/06 17:56:38] ScanObjectNNHardest INFO: Epoch 148 LR 0.000411 train_oa 99.97, val_oa 87.86, best val oa 88.34
+[05/06 17:57:57] ScanObjectNNHardest INFO: Epoch 149 LR 0.000400 train_oa 99.92, val_oa 88.03, best val oa 88.34
+[05/06 17:59:15] ScanObjectNNHardest INFO: Epoch 150 LR 0.000389 train_oa 99.88, val_oa 87.47, best val oa 88.34
+[05/06 18:00:34] ScanObjectNNHardest INFO: Epoch 151 LR 0.000378 train_oa 99.94, val_oa 86.12, best val oa 88.34
+[05/06 18:01:53] ScanObjectNNHardest INFO: Epoch 152 LR 0.000368 train_oa 99.90, val_oa 87.16, best val oa 88.34
+[05/06 18:03:12] ScanObjectNNHardest INFO: Epoch 153 LR 0.000357 train_oa 99.94, val_oa 86.95, best val oa 88.34
+[05/06 18:04:30] ScanObjectNNHardest INFO: Epoch 154 LR 0.000347 train_oa 99.95, val_oa 87.65, best val oa 88.34
+[05/06 18:05:49] ScanObjectNNHardest INFO: Epoch 155 LR 0.000337 train_oa 99.97, val_oa 88.03, best val oa 88.34
+[05/06 18:07:07] ScanObjectNNHardest INFO: Epoch 156 LR 0.000328 train_oa 99.98, val_oa 87.86, best val oa 88.34
+[05/06 18:08:26] ScanObjectNNHardest INFO: Epoch 157 LR 0.000318 train_oa 99.96, val_oa 88.03, best val oa 88.34
+[05/06 18:09:45] ScanObjectNNHardest INFO: Epoch 158 LR 0.000309 train_oa 99.96, val_oa 88.13, best val oa 88.34
+[05/06 18:11:04] ScanObjectNNHardest INFO: Find a better ckpt @E159
+[05/06 18:11:04] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 78.31%
+bin       : 91.96%
+box       : 69.92%
+cabinet   : 88.98%
+chair     : 95.64%
+desk      : 82.67%
+display   : 88.73%
+door      : 94.29%
+shelf     : 87.55%
+table     : 83.33%
+bed       : 84.55%
+pillow    : 90.48%
+sink      : 80.83%
+sofa      : 95.24%
+toilet    : 98.82%
+E@159	OA: 88.58	mAcc: 87.42
+
+[05/06 18:11:04] ScanObjectNNHardest INFO: Epoch 159 LR 0.000299 train_oa 99.96, val_oa 88.58, best val oa 88.58
+[05/06 18:11:05] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 18:12:23] ScanObjectNNHardest INFO: Epoch 160 LR 0.000290 train_oa 99.95, val_oa 88.41, best val oa 88.58
+[05/06 18:13:41] ScanObjectNNHardest INFO: Epoch 161 LR 0.000281 train_oa 99.97, val_oa 87.79, best val oa 88.58
+[05/06 18:15:00] ScanObjectNNHardest INFO: Epoch 162 LR 0.000273 train_oa 99.96, val_oa 87.82, best val oa 88.58
+[05/06 18:16:19] ScanObjectNNHardest INFO: Epoch 163 LR 0.000264 train_oa 99.99, val_oa 88.10, best val oa 88.58
+[05/06 18:17:37] ScanObjectNNHardest INFO: Epoch 164 LR 0.000256 train_oa 99.98, val_oa 87.99, best val oa 88.58
+[05/06 18:18:56] ScanObjectNNHardest INFO: Epoch 165 LR 0.000248 train_oa 100.00, val_oa 87.79, best val oa 88.58
+[05/06 18:20:15] ScanObjectNNHardest INFO: Epoch 166 LR 0.000240 train_oa 99.96, val_oa 88.10, best val oa 88.58
+[05/06 18:21:34] ScanObjectNNHardest INFO: Epoch 167 LR 0.000232 train_oa 99.98, val_oa 87.82, best val oa 88.58
+[05/06 18:22:52] ScanObjectNNHardest INFO: Find a better ckpt @E168
+[05/06 18:22:52] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 71.08%
+bin       : 90.45%
+box       : 67.67%
+cabinet   : 91.40%
+chair     : 95.90%
+desk      : 86.67%
+display   : 86.76%
+door      : 92.38%
+shelf     : 91.29%
+table     : 80.00%
+bed       : 85.45%
+pillow    : 90.48%
+sink      : 86.67%
+sofa      : 96.67%
+toilet    : 96.47%
+E@168	OA: 88.76	mAcc: 87.29
+
+[05/06 18:22:52] ScanObjectNNHardest INFO: Epoch 168 LR 0.000225 train_oa 99.99, val_oa 88.76, best val oa 88.76
+[05/06 18:22:53] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 18:24:11] ScanObjectNNHardest INFO: Epoch 169 LR 0.000218 train_oa 99.98, val_oa 88.72, best val oa 88.76
+[05/06 18:25:30] ScanObjectNNHardest INFO: Epoch 170 LR 0.000210 train_oa 99.94, val_oa 87.65, best val oa 88.76
+[05/06 18:26:49] ScanObjectNNHardest INFO: Epoch 171 LR 0.000204 train_oa 99.96, val_oa 88.20, best val oa 88.76
+[05/06 18:28:08] ScanObjectNNHardest INFO: Epoch 172 LR 0.000197 train_oa 99.98, val_oa 88.34, best val oa 88.76
+[05/06 18:29:27] ScanObjectNNHardest INFO: Epoch 173 LR 0.000190 train_oa 99.97, val_oa 87.86, best val oa 88.76
+[05/06 18:30:45] ScanObjectNNHardest INFO: Epoch 174 LR 0.000184 train_oa 99.98, val_oa 88.27, best val oa 88.76
+[05/06 18:32:04] ScanObjectNNHardest INFO: Epoch 175 LR 0.000178 train_oa 99.99, val_oa 88.55, best val oa 88.76
+[05/06 18:33:23] ScanObjectNNHardest INFO: Epoch 176 LR 0.000172 train_oa 99.99, val_oa 88.13, best val oa 88.76
+[05/06 18:34:42] ScanObjectNNHardest INFO: Epoch 177 LR 0.000167 train_oa 100.00, val_oa 88.51, best val oa 88.76
+[05/06 18:36:00] ScanObjectNNHardest INFO: Epoch 178 LR 0.000161 train_oa 99.98, val_oa 88.48, best val oa 88.76
+[05/06 18:37:19] ScanObjectNNHardest INFO: Epoch 179 LR 0.000156 train_oa 99.98, val_oa 88.62, best val oa 88.76
+[05/06 18:38:38] ScanObjectNNHardest INFO: Epoch 180 LR 0.000151 train_oa 99.99, val_oa 88.20, best val oa 88.76
+[05/06 18:39:57] ScanObjectNNHardest INFO: Epoch 181 LR 0.000146 train_oa 100.00, val_oa 88.62, best val oa 88.76
+[05/06 18:41:15] ScanObjectNNHardest INFO: Epoch 182 LR 0.000142 train_oa 100.00, val_oa 88.58, best val oa 88.76
+[05/06 18:42:34] ScanObjectNNHardest INFO: Find a better ckpt @E183
+[05/06 18:42:34] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 72.29%
+bin       : 89.45%
+box       : 74.44%
+cabinet   : 93.28%
+chair     : 95.90%
+desk      : 83.33%
+display   : 90.69%
+door      : 94.29%
+shelf     : 90.04%
+table     : 77.41%
+bed       : 83.64%
+pillow    : 90.48%
+sink      : 82.50%
+sofa      : 95.71%
+toilet    : 94.12%
+E@183	OA: 88.79	mAcc: 87.17
+
+[05/06 18:42:34] ScanObjectNNHardest INFO: Epoch 183 LR 0.000138 train_oa 99.99, val_oa 88.79, best val oa 88.79
+[05/06 18:42:34] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 18:43:53] ScanObjectNNHardest INFO: Epoch 184 LR 0.000134 train_oa 100.00, val_oa 88.45, best val oa 88.79
+[05/06 18:45:11] ScanObjectNNHardest INFO: Epoch 185 LR 0.000130 train_oa 99.97, val_oa 88.76, best val oa 88.79
+[05/06 18:46:30] ScanObjectNNHardest INFO: Find a better ckpt @E186
+[05/06 18:46:30] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 74.70%
+bin       : 88.44%
+box       : 69.17%
+cabinet   : 90.86%
+chair     : 94.87%
+desk      : 78.00%
+display   : 91.18%
+door      : 96.19%
+shelf     : 90.46%
+table     : 84.44%
+bed       : 84.55%
+pillow    : 91.43%
+sink      : 83.33%
+sofa      : 95.71%
+toilet    : 97.65%
+E@186	OA: 88.90	mAcc: 87.40
+
+[05/06 18:46:30] ScanObjectNNHardest INFO: Epoch 186 LR 0.000126 train_oa 99.99, val_oa 88.90, best val oa 88.90
+[05/06 18:46:31] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 18:47:49] ScanObjectNNHardest INFO: Epoch 187 LR 0.000123 train_oa 99.99, val_oa 88.65, best val oa 88.90
+[05/06 18:49:08] ScanObjectNNHardest INFO: Find a better ckpt @E188
+[05/06 18:49:08] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 74.70%
+bin       : 89.95%
+box       : 70.68%
+cabinet   : 90.05%
+chair     : 96.41%
+desk      : 82.67%
+display   : 89.71%
+door      : 96.19%
+shelf     : 90.46%
+table     : 80.74%
+bed       : 85.45%
+pillow    : 89.52%
+sink      : 83.33%
+sofa      : 96.67%
+toilet    : 97.65%
+E@188	OA: 89.00	mAcc: 87.61
+
+[05/06 18:49:08] ScanObjectNNHardest INFO: Epoch 188 LR 0.000120 train_oa 100.00, val_oa 89.00, best val oa 89.00
+[05/06 18:49:08] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 18:50:27] ScanObjectNNHardest INFO: Epoch 189 LR 0.000117 train_oa 100.00, val_oa 88.45, best val oa 89.00
+[05/06 18:51:45] ScanObjectNNHardest INFO: Epoch 190 LR 0.000114 train_oa 100.00, val_oa 88.24, best val oa 89.00
+[05/06 18:53:04] ScanObjectNNHardest INFO: Epoch 191 LR 0.000112 train_oa 99.99, val_oa 88.45, best val oa 89.00
+[05/06 18:54:23] ScanObjectNNHardest INFO: Epoch 192 LR 0.000109 train_oa 100.00, val_oa 88.69, best val oa 89.00
+[05/06 18:55:42] ScanObjectNNHardest INFO: Epoch 193 LR 0.000107 train_oa 100.00, val_oa 88.55, best val oa 89.00
+[05/06 18:57:01] ScanObjectNNHardest INFO: Epoch 194 LR 0.000106 train_oa 100.00, val_oa 88.55, best val oa 89.00
+[05/06 18:58:20] ScanObjectNNHardest INFO: Epoch 195 LR 0.000104 train_oa 100.00, val_oa 88.76, best val oa 89.00
+[05/06 18:59:39] ScanObjectNNHardest INFO: Epoch 196 LR 0.000103 train_oa 100.00, val_oa 88.13, best val oa 89.00
+[05/06 19:00:57] ScanObjectNNHardest INFO: Epoch 197 LR 0.000102 train_oa 100.00, val_oa 88.38, best val oa 89.00
+[05/06 19:02:16] ScanObjectNNHardest INFO: Epoch 198 LR 0.000101 train_oa 100.00, val_oa 87.47, best val oa 89.00
+[05/06 19:03:35] ScanObjectNNHardest INFO: Epoch 199 LR 0.000100 train_oa 99.99, val_oa 88.45, best val oa 89.00
+[05/06 19:04:53] ScanObjectNNHardest INFO: Epoch 200 LR 0.000100 train_oa 100.00, val_oa 88.34, best val oa 89.00
+[05/06 19:06:12] ScanObjectNNHardest INFO: Epoch 201 LR 0.000100 train_oa 99.98, val_oa 88.34, best val oa 89.00
+[05/06 19:07:31] ScanObjectNNHardest INFO: Epoch 202 LR 0.000100 train_oa 99.99, val_oa 88.13, best val oa 89.00
+[05/06 19:08:49] ScanObjectNNHardest INFO: Epoch 203 LR 0.000100 train_oa 99.99, val_oa 88.03, best val oa 89.00
+[05/06 19:10:08] ScanObjectNNHardest INFO: Epoch 204 LR 0.000100 train_oa 99.98, val_oa 88.31, best val oa 89.00
+[05/06 19:11:27] ScanObjectNNHardest INFO: Epoch 205 LR 0.000100 train_oa 99.99, val_oa 88.24, best val oa 89.00
+[05/06 19:12:46] ScanObjectNNHardest INFO: Epoch 206 LR 0.000100 train_oa 100.00, val_oa 88.41, best val oa 89.00
+[05/06 19:14:04] ScanObjectNNHardest INFO: Epoch 207 LR 0.000100 train_oa 100.00, val_oa 89.00, best val oa 89.00
+[05/06 19:15:23] ScanObjectNNHardest INFO: Epoch 208 LR 0.000100 train_oa 99.99, val_oa 88.10, best val oa 89.00
+[05/06 19:16:42] ScanObjectNNHardest INFO: Epoch 209 LR 0.000100 train_oa 100.00, val_oa 88.65, best val oa 89.00
+[05/06 19:18:01] ScanObjectNNHardest INFO: Epoch 210 LR 0.000100 train_oa 100.00, val_oa 88.93, best val oa 89.00
+[05/06 19:19:19] ScanObjectNNHardest INFO: Epoch 211 LR 0.000100 train_oa 100.00, val_oa 88.20, best val oa 89.00
+[05/06 19:20:38] ScanObjectNNHardest INFO: Epoch 212 LR 0.000100 train_oa 100.00, val_oa 88.45, best val oa 89.00
+[05/06 19:21:57] ScanObjectNNHardest INFO: Epoch 213 LR 0.000100 train_oa 100.00, val_oa 88.41, best val oa 89.00
+[05/06 19:23:16] ScanObjectNNHardest INFO: Epoch 214 LR 0.000100 train_oa 99.99, val_oa 88.55, best val oa 89.00
+[05/06 19:24:34] ScanObjectNNHardest INFO: Epoch 215 LR 0.000100 train_oa 99.99, val_oa 88.86, best val oa 89.00
+[05/06 19:25:53] ScanObjectNNHardest INFO: Epoch 216 LR 0.000100 train_oa 99.98, val_oa 87.79, best val oa 89.00
+[05/06 19:27:12] ScanObjectNNHardest INFO: Epoch 217 LR 0.000100 train_oa 100.00, val_oa 88.20, best val oa 89.00
+[05/06 19:28:30] ScanObjectNNHardest INFO: Epoch 218 LR 0.000100 train_oa 100.00, val_oa 88.10, best val oa 89.00
+[05/06 19:29:49] ScanObjectNNHardest INFO: Epoch 219 LR 0.000100 train_oa 100.00, val_oa 88.27, best val oa 89.00
+[05/06 19:31:08] ScanObjectNNHardest INFO: Epoch 220 LR 0.000100 train_oa 100.00, val_oa 88.45, best val oa 89.00
+[05/06 19:32:26] ScanObjectNNHardest INFO: Epoch 221 LR 0.000100 train_oa 99.99, val_oa 88.55, best val oa 89.00
+[05/06 19:33:45] ScanObjectNNHardest INFO: Epoch 222 LR 0.000100 train_oa 100.00, val_oa 88.10, best val oa 89.00
+[05/06 19:35:04] ScanObjectNNHardest INFO: Epoch 223 LR 0.000100 train_oa 99.99, val_oa 87.99, best val oa 89.00
+[05/06 19:36:22] ScanObjectNNHardest INFO: Epoch 224 LR 0.000100 train_oa 100.00, val_oa 87.93, best val oa 89.00
+[05/06 19:37:41] ScanObjectNNHardest INFO: Epoch 225 LR 0.000100 train_oa 100.00, val_oa 88.13, best val oa 89.00
+[05/06 19:39:00] ScanObjectNNHardest INFO: Epoch 226 LR 0.000100 train_oa 100.00, val_oa 88.31, best val oa 89.00
+[05/06 19:40:19] ScanObjectNNHardest INFO: Epoch 227 LR 0.000100 train_oa 100.00, val_oa 88.45, best val oa 89.00
+[05/06 19:41:37] ScanObjectNNHardest INFO: Epoch 228 LR 0.000100 train_oa 100.00, val_oa 87.93, best val oa 89.00
+[05/06 19:42:56] ScanObjectNNHardest INFO: Epoch 229 LR 0.000100 train_oa 100.00, val_oa 88.13, best val oa 89.00
+[05/06 19:44:15] ScanObjectNNHardest INFO: Epoch 230 LR 0.000100 train_oa 100.00, val_oa 88.27, best val oa 89.00
+[05/06 19:45:34] ScanObjectNNHardest INFO: Epoch 231 LR 0.000100 train_oa 99.99, val_oa 88.27, best val oa 89.00
+[05/06 19:46:52] ScanObjectNNHardest INFO: Epoch 232 LR 0.000100 train_oa 100.00, val_oa 88.45, best val oa 89.00
+[05/06 19:48:11] ScanObjectNNHardest INFO: Epoch 233 LR 0.000100 train_oa 100.00, val_oa 87.61, best val oa 89.00
+[05/06 19:49:30] ScanObjectNNHardest INFO: Epoch 234 LR 0.000100 train_oa 100.00, val_oa 88.45, best val oa 89.00
+[05/06 19:50:49] ScanObjectNNHardest INFO: Epoch 235 LR 0.000100 train_oa 100.00, val_oa 88.31, best val oa 89.00
+[05/06 19:52:08] ScanObjectNNHardest INFO: Epoch 236 LR 0.000100 train_oa 100.00, val_oa 88.31, best val oa 89.00
+[05/06 19:53:27] ScanObjectNNHardest INFO: Epoch 237 LR 0.000100 train_oa 100.00, val_oa 88.97, best val oa 89.00
+[05/06 19:54:45] ScanObjectNNHardest INFO: Find a better ckpt @E238
+[05/06 19:54:45] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 77.11%
+bin       : 87.44%
+box       : 75.19%
+cabinet   : 89.25%
+chair     : 95.90%
+desk      : 81.33%
+display   : 90.69%
+door      : 97.14%
+shelf     : 90.87%
+table     : 79.26%
+bed       : 87.27%
+pillow    : 91.43%
+sink      : 84.17%
+sofa      : 97.14%
+toilet    : 95.29%
+E@238	OA: 89.04	mAcc: 87.97
+
+[05/06 19:54:45] ScanObjectNNHardest INFO: Epoch 238 LR 0.000100 train_oa 100.00, val_oa 89.04, best val oa 89.04
+[05/06 19:54:46] ScanObjectNNHardest INFO: Found the best model and saved in log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 19:56:05] ScanObjectNNHardest INFO: Epoch 239 LR 0.000100 train_oa 100.00, val_oa 88.20, best val oa 89.04
+[05/06 19:57:28] ScanObjectNNHardest INFO: Epoch 240 LR 0.000100 train_oa 100.00, val_oa 88.58, best val oa 89.04
+[05/06 19:58:51] ScanObjectNNHardest INFO: Epoch 241 LR 0.000100 train_oa 100.00, val_oa 88.27, best val oa 89.04
+[05/06 20:00:11] ScanObjectNNHardest INFO: Epoch 242 LR 0.000100 train_oa 100.00, val_oa 87.86, best val oa 89.04
+[05/06 20:01:29] ScanObjectNNHardest INFO: Epoch 243 LR 0.000100 train_oa 100.00, val_oa 88.90, best val oa 89.04
+[05/06 20:02:49] ScanObjectNNHardest INFO: Epoch 244 LR 0.000100 train_oa 99.99, val_oa 88.20, best val oa 89.04
+[05/06 20:04:07] ScanObjectNNHardest INFO: Epoch 245 LR 0.000100 train_oa 100.00, val_oa 88.27, best val oa 89.04
+[05/06 20:05:26] ScanObjectNNHardest INFO: Epoch 246 LR 0.000100 train_oa 100.00, val_oa 88.34, best val oa 89.04
+[05/06 20:06:47] ScanObjectNNHardest INFO: Epoch 247 LR 0.000100 train_oa 100.00, val_oa 88.34, best val oa 89.04
+[05/06 20:08:14] ScanObjectNNHardest INFO: Epoch 248 LR 0.000100 train_oa 100.00, val_oa 88.24, best val oa 89.04
+[05/06 20:09:40] ScanObjectNNHardest INFO: Epoch 249 LR 0.000100 train_oa 99.99, val_oa 88.45, best val oa 89.04
+[05/06 20:11:07] ScanObjectNNHardest INFO: Epoch 250 LR 0.000100 train_oa 100.00, val_oa 88.38, best val oa 89.04
+[05/06 20:11:14] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 73.49%
+bin       : 88.94%
+box       : 70.68%
+cabinet   : 89.78%
+chair     : 96.41%
+desk      : 78.00%
+display   : 93.14%
+door      : 95.71%
+shelf     : 91.29%
+table     : 76.67%
+bed       : 84.55%
+pillow    : 87.62%
+sink      : 84.17%
+sofa      : 96.19%
+toilet    : 96.47%
+E@238	OA: 88.38	mAcc: 86.87
+
+[05/06 20:11:15] ScanObjectNNHardest INFO: Successful Loading the ckpt from log/scanobjectnn/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu/checkpoint/scanobjectnn-train-pan-ngpus1-seed1174-20250506-144155-7T4oXRtkNC7Ls8dxRSe7Mu_ckpt_best.pth
+[05/06 20:11:15] ScanObjectNNHardest INFO: ckpts @ 238 epoch( {'best_val': 89.03539276123047} )
+[05/06 20:11:22] ScanObjectNNHardest INFO: 
+Classes	Acc
+bag       : 77.11%
+bin       : 87.44%
+box       : 75.19%
+cabinet   : 89.25%
+chair     : 95.90%
+desk      : 81.33%
+display   : 90.69%
+door      : 97.14%
+shelf     : 90.87%
+table     : 79.26%
+bed       : 87.27%
+pillow    : 91.43%
+sink      : 84.17%
+sofa      : 97.14%
+toilet    : 95.29%
+E@238	OA: 89.04	mAcc: 87.97
+
